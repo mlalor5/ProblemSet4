@@ -167,7 +167,7 @@ netdirectory <- function(netfile, directory=getwd()){ #Takes file as input, opti
   candidates <- cbind(candidates[,-c(4,12)], prefs, lastpos) 
   
   
-  ###FUNCTION### DOCUMENT LATER###
+  ## QUICK function to find heterogeneous variables
   #If there's no variation in column value FALSE, else TRUE
   uniquefunction <- function(x) {
     val <- ifelse(length(unique(x))==1,F,T)
@@ -251,13 +251,45 @@ netdirectory <- function(netfile, directory=getwd()){ #Takes file as input, opti
   #Include a PDF file plotting (in some creative, meaningful, and labeled way) 
   #how these quantities varied across the simulation.
   
-  pdf("PositionPlot/Positions.pdf", width=7, height=7)
+  pdf("PositionPlot/Positions.pdf", width=7, height=7) 
+  par(mfrow=c(3,1))
   
+  #Have 3 plots per page of each dimension, 
+  #DIMENSION 1
+  plot(Dim1matrix[,2]~Dim1matrix[,1], #Red Candidates D1
+       xlab="Simulation", ylab="Dimension 1", ylim=c(-6,6), type="l", col="red", main="Candidates-Dim1") 
+  lines(Dim1matrix[,3], Dim1matrix[,4], type="l", col="blue")
+  plot(Dim1matrix[,5], Dim1matrix[,6], #Red Activists D1
+       xlab="Simulation", ylab="Dimension 1", ylim=c(-6,6), type="l", col="red", main="Activists-Dim1") 
+  lines(Dim1matrix[,11], Dim1matrix[,12], type="l", col="blue")
+  plot(Dim1matrix[,7], Dim1matrix[,8], #Red Voters D1
+       xlab="Simulation", ylab="Dimension 1", ylim=c(-6,6), type="l", col="red", main="Voters-Dim1") 
+  lines(Dim1matrix[,9], Dim1matrix[,10], type="l", col="blue")
   
-  #Commands to make the plot
-  plot(Dim1matrix)
-  plot(Dim2matrix)
-  plot(Dim3matrix)
+  #DIMENSION 2
+  plot(Dim2matrix[,2]~Dim2matrix[,1], #Red Candidates
+       xlab="Simulation", ylab="Dimension 2", ylim=c(-11,11), type="l", col="red", main="Candidates-Dim2") 
+  lines(Dim2matrix[,3], Dim2matrix[,4], type="l", col="blue")
+  plot(Dim2matrix[,5], Dim2matrix[,6], #Red Activists
+       xlab="Simulation", ylab="Dimension 2", ylim=c(-11,11), type="l", col="red", main="Activists-Dim2") 
+  lines(Dim2matrix[,11], Dim2matrix[,12], type="l", col="blue")
+  plot(Dim2matrix[,7], Dim2matrix[,8], #Red Voters
+       xlab="Simulation", ylab="Dimension 2", ylim=c(-11,11), type="l", col="red", main="Voters-Dim2") 
+  lines(Dim2matrix[,9], Dim2matrix[,10], type="l", col="blue")
+  
+  #DIMENSION 3
+  plot(Dim1matrix[,2]~Dim1matrix[,1], #Red Candidates
+       xlab="Simulation", ylab="Dimension 3", ylim=c(-6,6), type="l", col="red", main="Candidates-Dim3") 
+  lines(Dim1matrix[,3], Dim1matrix[,4], type="l", col="blue")
+  plot(Dim1matrix[,5], Dim1matrix[,6], #Red Activists
+       xlab="Simulation", ylab="Dimension 3", ylim=c(-6,6), type="l", col="red", main="Activists-Dim3") 
+  lines(Dim1matrix[,11], Dim1matrix[,12], type="l", col="blue")
+  plot(Dim1matrix[,7], Dim1matrix[,8], #Red Voters
+       xlab="Simulation", ylab="Dimension 3", ylim=c(-6,6), type="l", col="red", main="Voters-Dim3") 
+  lines(Dim1matrix[,9], Dim1matrix[,10], type="l", col="blue")
+  
+  par(mfrow=c(1,1))
+  
   
   dev.off()
   
@@ -282,10 +314,11 @@ netdirectory <- function(netfile, directory=getwd()){ #Takes file as input, opti
   #MAKE PDF
   pdf("WinnersPlot/Winner.pdf", width=7, height=7)
   
-  #Commands to make the plot
-  plot(Dim1matrix)
-  plot(Dim2matrix)
-  plot(Dim3matrix)
+  par(mfrow=c(1,1))
+  plot(Winmatrix[,4]~Winmatrix[,3], #Middle
+       xlab="Simulation", ylab="Percent Win", ylim=c(0,100), type="l", main="Percentage Winners by Color") 
+  lines(Winmatrix[,2]~Winmatrix[,1], type="l", col="blue") #BLUE PARTY
+  lines(Winmatrix[,6]~Winmatrix[,5], type="l", col="red")  #RED PARTY
   
   dev.off()
   
@@ -301,7 +334,6 @@ netdirectory <- function(netfile, directory=getwd()){ #Takes file as input, opti
   Polarmatrix <-  matrix(unlist(PolarData), nrow=169, byrow=T)
   Polarmatrix <- Polarmatrix[, c(1,2,5,6,9,10)] #only x,y values for "TOTAL", "VOTERS", and "ACTIVISTS"
   colnames(Polarmatrix) <- paste(rep(c("x","y"), 3), rep(c("TOTAL", "VOTERS", "ACTIVISTS"), each=2), sep=".")
-  head(Polarmatrix)
   
   #CSV file
   write.csv(x=Polarmatrix, file="PolarizationPlot/Polarization.csv")
@@ -309,10 +341,10 @@ netdirectory <- function(netfile, directory=getwd()){ #Takes file as input, opti
   #MAKE PDF
   pdf("PolarizationPlot/PolariationPlot.pdf", width=7, height=7)
   
-  #Commands to make the plot
-  plot(Dim1matrix)
-  plot(Dim2matrix)
-  plot(Dim3matrix)
+  plot(Polarmatrix[,2]~Polarmatrix[,1], #Candidates
+       xlab="Simulation", ylab="Euclidian Distance", ylim=c(0,10), type="p", pch="c", cex=.6, main="Distance between Red and Blue") 
+  lines(Polarmatrix[,4]~Polarmatrix[,3], type="p", pch="v", cex=.6) #Voters
+  lines(Polarmatrix[,6]~Polarmatrix[,5], type="p", pch="a", cex=.6) #Activists
   
   dev.off()
   
@@ -330,24 +362,22 @@ netdirectory <- function(netfile, directory=getwd()){ #Takes file as input, opti
   head(Incumbmatrix)
   
   #CSV file
-  write.csv(x=Incumbmatrix, file="IncumbentPercentaePlot/IncumbentWins.csv")
+  write.csv(x=Incumbmatrix, file="IncumbentPercentagePlot/IncumbentWins.csv")
   
   #Make PDF
   pdf("IncumbentPercentagePlot/IncumbentWins.pdf", width=7, height=7)
   
-  #Commands to make the plot
-  plot(Dim1matrix)
-  plot(Dim2matrix)
-  plot(Dim3matrix)
+  plot(Incumbmatrix[,2]~Incumbmatrix[,1], #Candidates
+       xlab="Simulation", ylab="Percentage Winning", ylim=c(0,100), 
+       type="l", main="Percentage of Incumbents Winning") 
   
   dev.off()
   
 } # end function
 
-
 ## 2) The final directory should be structured as written in the assignment.
-#  Run the function and examine the output
-
+#  Run the function and examine the output - looked correct
+netdirectory(netfile, directory=getwd())
 
 
 ### Part II: Extra Problems ###
