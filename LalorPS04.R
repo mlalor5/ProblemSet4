@@ -224,21 +224,21 @@ netdirectory <- function(netfile, directory=getwd()){ #Takes file as input, opti
   positionlabels <- paste(rep(c("x","y"), 6), rep(ColorType, each=2), sep=".")
 
   #Extract Data
-  Dim1dat <- scan(netfile, skip=8546, nlines=168, what=" ", sep="\n") #Dim 1, data
+  Dim1dat <- scan(netfile, skip=8546, nlines=169, what=" ", sep="\n") #Dim 1, data
   Dim1Data <- strsplit(x=Dim1dat, split=",")
-  Dim1matrix <-  matrix(unlist(Dim1Data), nrow=168, byrow=T)
+  Dim1matrix <-  matrix(unlist(Dim1Data), nrow=169, byrow=T)
   Dim1matrix <- Dim1matrix[, c(1,2,5,6,9,10,13,14,17,18,21,22)] #only x,y values
   colnames(Dim1matrix) <- positionlabels
 
-  Dim2dat <- scan(netfile, skip=8730, nlines=168, what=" ", sep="\n") #Dimension 2 data
+  Dim2dat <- scan(netfile, skip=8730, nlines=169, what=" ", sep="\n") #Dimension 2 data
   Dim2Data <- strsplit(x=Dim2dat, split=",")
-  Dim2matrix <-  matrix(unlist(Dim2Data), nrow=168, byrow=T)
+  Dim2matrix <-  matrix(unlist(Dim2Data), nrow=169, byrow=T)
   Dim2matrix <- Dim2matrix[, c(1,2,5,6,9,10,13,14,17,18,21,22)] #only x,y values
   colnames(Dim2matrix) <- positionlabels
   
-  Dim3dat <- scan(netfile, skip=8914, nlines=168, what=" ", sep="\n") #Dimension 3 data
+  Dim3dat <- scan(netfile, skip=8914, nlines=169, what=" ", sep="\n") #Dimension 3 data
   Dim3Data <- strsplit(x=Dim3dat, split=",")
-  Dim3matrix <-  matrix(unlist(Dim3Data), nrow=168, byrow=T)
+  Dim3matrix <-  matrix(unlist(Dim3Data), nrow=169, byrow=T)
   Dim3matrix <- Dim3matrix[, c(1,2,5,6,9,10,13,14,17,18,21,22)] #only x,y values
   colnames(Dim3matrix) <- positionlabels
   
@@ -252,6 +252,7 @@ netdirectory <- function(netfile, directory=getwd()){ #Takes file as input, opti
   #how these quantities varied across the simulation.
   
   pdf("PositionPlot/Positions.pdf", width=7, height=7)
+  
   
   #Commands to make the plot
   plot(Dim1matrix)
@@ -267,6 +268,18 @@ netdirectory <- function(netfile, directory=getwd()){ #Takes file as input, opti
   #The numbers may not add to 100. 
   #The “y” column shows the percentage and the “x” column shows the time period.
   
+  #Extract Data - "WINNERS at 9130, x,y 9141-9309
+  Winnersdat <- scan(netfile, skip=9140, nlines=169, what=" ", sep="\n") #Dim 1, data
+  WinData <- strsplit(x=Winnersdat, split=",")
+  Winmatrix <-  matrix(unlist(WinData), nrow=169, byrow=T)
+  Winmatrix <- Winmatrix[, c(1,2,5,6,9,10)] #only x,y values for "BLUE", "FIFTY", and "RED"
+  colnames(Winmatrix) <- paste(rep(c("x","y"), 3), rep(c("BLUE", "FIFTY", "RED"), each=2), sep=".")
+  head(Winmatrix)
+  
+  #CSV file
+  write.csv(x=Winmatrix, file="WinnersPlot/Winner.csv")
+  
+  #MAKE PDF
   pdf("WinnersPlot/Winner.pdf", width=7, height=7)
   
   #Commands to make the plot
@@ -282,6 +295,18 @@ netdirectory <- function(netfile, directory=getwd()){ #Takes file as input, opti
   #Euclidean distance between the mean position of the candidates (TOTAL), voters, 
   #and activists associated with the two parties in each time period.
   
+  #Extract Data - "Polarization at 9311, x,y 9322-9490
+  Polardat <- scan(netfile, skip=9321, nlines=169, what=" ", sep="\n") #Polarization data
+  PolarData <- strsplit(x=Polardat, split=",")
+  Polarmatrix <-  matrix(unlist(PolarData), nrow=169, byrow=T)
+  Polarmatrix <- Polarmatrix[, c(1,2,5,6,9,10)] #only x,y values for "TOTAL", "VOTERS", and "ACTIVISTS"
+  colnames(Polarmatrix) <- paste(rep(c("x","y"), 3), rep(c("TOTAL", "VOTERS", "ACTIVISTS"), each=2), sep=".")
+  head(Polarmatrix)
+  
+  #CSV file
+  write.csv(x=Polarmatrix, file="PolarizationPlot/Polarization.csv")
+  
+  #MAKE PDF
   pdf("PolarizationPlot/PolariationPlot.pdf", width=7, height=7)
   
   #Commands to make the plot
@@ -296,6 +321,18 @@ netdirectory <- function(netfile, directory=getwd()){ #Takes file as input, opti
   
   #the percentage of incumbent candidates in each party that are “winning” in each time period
   
+  #Extract Data - Incumbent at 9492, data start 9501
+  Incumbdat <- scan(netfile, skip=9500, nlines=169, what=" ", sep="\n") #Incumbent Percentage data
+  IncumbData <- strsplit(x=Incumbdat, split=",")
+  Incumbmatrix <-  matrix(unlist(IncumbData), nrow=169, byrow=T)
+  Incumbmatrix <- Incumbmatrix[, c(1,2)] #only x,y values for "PERCENT"
+  colnames(Incumbmatrix) <- paste(rep(c("x","y"), 1), rep(c("PERCENT"), each=2), sep=".")
+  head(Incumbmatrix)
+  
+  #CSV file
+  write.csv(x=Incumbmatrix, file="IncumbentPercentaePlot/IncumbentWins.csv")
+  
+  #Make PDF
   pdf("IncumbentPercentagePlot/IncumbentWins.pdf", width=7, height=7)
   
   #Commands to make the plot
