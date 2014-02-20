@@ -387,28 +387,42 @@ netdirectory(netfile, directory=getwd())
 
 # 3) Devise a program that outputs a table of squares and cubes of the numbers 1 to n.
   
-sqrcube <- function(n) { # n is top value 
+sqrcube <- function(n=7) { # n is top value, default for example
   #Check value for n 
   if (n < 1) { #Check n
     print("N should be a real number greater than 0")
     break
   }
-  title <- c("number", "square", "cube")
-  sprintf(title, justify="right") #alt: format()
+  title <- cat(c(format("number", justify="right", width=9), format("square", justify="right", width=9),format("cube", justify="right", width=9), "\n"), sep="")
+  i=1
   for (i in 1:n) {
-    cat(i, i^2, i^3, "\n", sep="\t")
-    format()
+    cat(c(format(i, justify="right", width=9), format(i^2, justify="right", width=9),format(i^2, justify="right", width=9),"\n"), sep="")   
   } #end for loop to
-} # End function - says program, may want to make a script
-sqrcube(3)
+} # End function 
+sqrcube(7)
+
+# Make into a program so it could be read from source, if desired
+# dump(list="sqrcube", file="sqrcube.R")
 
 
 # 4) Write an R program that prints out the standard multiplication table:
 # Hint: generate a matrix mtable that contains the table, then use show(mtable)
 
+multitable <- function(m,k) { #Takes inputs for table size m by k
+  mtable <- matrix(nrow=m, ncol=k)
+  for (i in 1:m) {
+    mtable[i,] <- i*(1:k)
+  }
+  show(mtable)
+  return(mtable)
+}
+#Prints out table, as well as returning matrix
+m <- k <- 9
+mtable <- multitable(m,k)
 
 
 ## 2) JMR Chapter 7, problems 3 and 4
+library(lattice)
 
 #3) Regression to the mean for population heights
 
@@ -423,21 +437,30 @@ next.gen <- function(pop) {
   return(pop)
 }
 
-#Use the function next.gen to generate nine generations, then use histogram to plot the distribution of male heights in each gen
-gens <- vector("list", 9)
-gen1 <- next.gen(pop)
-gen2 <- next.gen(gen1)
-i=1
-prevgen <- pop
-for (i in 1:9) {
-  gens[i] = next.gen(prevgen)
-  prevgen <- gens[i]
+#Use the function next.gen to generate nine generations
+gens <- data.frame(height=pop$m, generation=factor(rep(1,100), levels=c(1:9)))
+nextgen <- prevgen <- pop
+for (i in 2:9) {
+  nextgen <- next.gen(prevgen) #Get data for next generation
+  gens <- rbind(gens, data.frame(height=nextgen$m, generation=factor(rep(i,100), levels=c(1:9))))
+  prevgen <- nextgen # Setup for next iteration
 }
+head(gens)
 
-name <- paste("gen",1, sep="")
+#use histogram to plot the distribution of male heights, as in Fig 7.7 (3x3)
+histogram(~height | generation, data=gens, 
+          xlab="Height", main= "Distribution of Male Heights by Generation") 
 
 
-#4 Reproduce Figure 6.1 using lattice graphics (pg 102 for orig)
+#4 Reproduce Figure 6.1 using lattice graphics (pg 119 for origm says 106)
+#Tree data - package for book
+library(spuRs)
+data(treeg)
+
+#Each tree is a variable (tree.ID), each line a variable of tree's height (height.ft) over age (age)
+
+xyplot(height.ft ~ age, group= tree.ID, data=treeg, 
+       type="l", ylab="height (feet)", xlab="age (years)", col="black", tck=c(1,0)) #tck length 2 vector controls length of left/bottom and right/top
 
 
 
