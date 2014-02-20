@@ -22,6 +22,10 @@ netfile <- "~/Documents/Spring_2014/Montgomery/PS04/NetLogo.csv"
 ###FUNCTION###
 netdirectory <- function(netfile, directory=getwd()){ #Takes file as input, optional to change directory for base
   
+  
+  ###ROOT MODEL DIRECTORY###
+  
+  
   #Make model name 2nd line of file (appears to be either model or file name)
   ModelTime <- scan(netfile, skip=1, nlines=2, what=" ", sep=",") #Only need first item in 2 lines
   ModelName <- gsub(pattern="nlogo", replacement="", x=ModelTime[1]) #get rid of extension
@@ -30,16 +34,17 @@ netdirectory <- function(netfile, directory=getwd()){ #Takes file as input, opti
   Time <- strsplit(Dates[[1]][2], split=":") #Time separated by :, second item in Dates
   ModelDat <- paste(ModelName, Day, ".", Time[[1]][1], Time[[1]][2], sep="") #Make one string, separate by periods
 
-  
   #ModelName root
   dir.create(ModelDat)
-  list.dirs() #Can see that ModelName is now a directory in working directory
+  #list.dirs() #Can see that ModelName is now a directory in working directory
   #Change working directory to ModelName, since that's root of described tree
   setwd(ModelDat)
-  getwd() #Now it's the working directory
-
+  #getwd() #Now it's the working directory
+    
   
-  # List of Globals
+  ###Globals DIRECTORY###
+  
+  
   Globals <- scan(netfile, skip=8, nlines=2, what=" ", sep="\n")
   GlobalNames <- strsplit(Globals[1], split=",")
   GlobalVals <- strsplit(Globals[2], split=",")
@@ -55,6 +60,9 @@ netdirectory <- function(netfile, directory=getwd()){ #Takes file as input, opti
   #From facebook "Global.r is supposed to be a list of the globals. Use the dump command."
   dump(list="Global", file="Globals/Globals.R") #write R file
 
+  
+  ### TURTLES DIRECTORY###
+  
   
   #Turtles (Districts, Voters, Activists, Parties, Candidates breeds as .csv)
   dir.create("Turtles")
@@ -79,18 +87,14 @@ netdirectory <- function(netfile, directory=getwd()){ #Takes file as input, opti
   #Get rid of redundant "breed" and white space in breed data
   Turtleclean[,9] <- gsub(pattern="breed|[[:blank:]]", replace="", x=Turtleclean[,9])
   
-  
-  ## 10 - extra data (about plot display) - remove so only relevant information
-  # remove color, heading, shape, label, label-color, (2-8) size, pen-size, pen-mode, (11-13)
-  # 
+  ## 10) - extra data (about plot display) - remove so only relevant information
+  # remove color, heading, shape, label, label-color, (2-8) size, pen-size, pen-mode, (11-13) 
   Turtleclean <- Turtleclean[,-c(2:8,11:13)]
   #  colnames(Turtleclean) #Remanining names
   Turtledf <- data.frame(Turtleclean, stringsAsFactors=F)
   #dim(Turtledf) #28 variables after removing ones that appear graphing related
   
-  
-  ##5 Turtle directory ##
-  
+  ## 5)
   
   #Divide into District, Voters, Activists, Parties, Candidates
   turtletypes <- unique(Turtledf$breed) #1 districts, 2 voters, 3 activits, 4 parties, 5 cands
@@ -136,7 +140,7 @@ netdirectory <- function(netfile, directory=getwd()){ #Takes file as input, opti
   activists <- cbind(activists[,-c(15,18)], prefs, actsal) 
   
   #Divide vectors in parties data
-  colnames(parties)
+  #colnames(parties)
   #break down "mean.position", "my.cands.party", and "enforcement.point" - 20, 22, 23
   meanpos<- strsplit(x=parties[,20], split=" ") #split mean position
   prefs <- matrix(unlist(meanpos), nrow=2, byrow=T)
@@ -151,7 +155,7 @@ netdirectory <- function(netfile, directory=getwd()){ #Takes file as input, opti
   parties <- cbind(parties[,-c(20,22,23)], prefs, candsparty,enfpoint) 
   
   #Divide vectors in candidates data
-  colnames(candidates)
+  #colnames(candidates)
   #break down "positions.obs", "positions.obs.last" - 4, 12
   posobs<- strsplit(x=candidates[,4], split=" ") #split positions.obs
   prefs <- matrix(unlist(posobs), ncol=3, byrow=T)
@@ -163,8 +167,8 @@ netdirectory <- function(netfile, directory=getwd()){ #Takes file as input, opti
   candidates <- cbind(candidates[,-c(4,12)], prefs, lastpos) 
   
   
-  
-  #If there's no variation in column value remove
+  ###FUNCTION### DOCUMENT LATER###
+  #If there's no variation in column value FALSE, else TRUE
   uniquefunction <- function(x) {
     val <- ifelse(length(unique(x))==1,F,T)
   }
@@ -172,23 +176,23 @@ netdirectory <- function(netfile, directory=getwd()){ #Takes file as input, opti
   #For districts
   removecol <- sapply(districts, FUN=uniquefunction) #returns false for each column with no variation in variable
   districtunique <- districts[,removecol] #remove homogenous variables
-  dim(districtunique) #Only 6 heterogeneous variables in districts
+  #dim(districtunique) #Only 6 heterogeneous variables in districts
   #For Voters
   removecol <- sapply(voters, FUN=uniquefunction) #returns false for each column with no variation in variable
   votersunique <- voters[,removecol] #remove homogenous variables
-  dim(votersunique) #Only 9 heterogeneous variables 
+  #dim(votersunique) #Only 9 heterogeneous variables 
   # For Activists
   removecol <- sapply(activists, FUN=uniquefunction) #returns false for each column with no variation in variable
   activistsunique <- activists[,removecol] #remove homogenous variables
-  dim(activistsunique) #Only 10 heterogeneous variables
+  #dim(activistsunique) #Only 10 heterogeneous variables
   #For Parties
   removecol <- sapply(parties, FUN=uniquefunction) #returns false for each column with no variation in variable
   partyunique <- parties[,removecol] #remove homogenous variables
-  dim(partyunique) #219 heterogeneous variables in districts
+ # dim(partyunique) #219 heterogeneous variables in districts
   #For Candidates
   removecol <- sapply(candidates, FUN=uniquefunction) #returns false for each column with no variation in variable
   candidatesunique <- candidates[,removecol] #remove homogenous variables
-  dim(candidatesunique) #Only 12 heterogeneous variables 
+  #dim(candidatesunique) #Only 12 heterogeneous variables 
   
   # Create CSVs
   write.csv(x=districtunique, file="Turtles/Districts.csv")
@@ -196,58 +200,116 @@ netdirectory <- function(netfile, directory=getwd()){ #Takes file as input, opti
   write.csv(x=activistsunique, file="Turtles/Activists.csv")
   write.csv(x=partyunique, file="Turtles/Parties.csv")
   write.csv(x=candidatesunique, file="Turtles/Candidates.csv")
+
   
-  ## END TURTLE ##
+  ## PLOTS DIRECTORY ##  
   
-  ## PLOTS ##
+  dir.create("Plots")
+  setwd("Plots") #Save typing since rest of work in Plots directory
   
-  } # end function
+  ## 6 Position Plot
+  dir.create("PositionPlot")
+  
+  #The first “Plot” records the average position of incumbent candidates (Red, Blue), activists, and
+  #voters along each of six dimensions.  (D1, D2, D3, etc.) Only the first three are relevant here.
+  
+  #PLOTS at row 8531, D1: 8533 (8545-8715), D2: 8717 (8729-8899), D3: 8901 (8913-9083)
+  Dim1 <- scan(netfile, skip=8544, nlines=1, what=" ", sep="\n") #Dim 1, first 2 lines are headers
+  
+  # Red Blue, Activists, Voters in first row (get 4 columns until next in lines below)
+  Groups <- strsplit(x=Dim1[[1]], split=",") # 24 items before blanks
+  ColorAndType <- gsub(pattern="[[:punct:]]", replace="", x=Groups[[1]])
+  ColorType <- ColorAndType[seq(1,24,by=4)] #every 4 new type, only 24 columns of actual data
+  #Make label that combines x or y with name in appropriate order
+  positionlabels <- paste(rep(c("x","y"), 6), rep(ColorType, each=2), sep=".")
+
+  #Extract Data
+  Dim1dat <- scan(netfile, skip=8546, nlines=168, what=" ", sep="\n") #Dim 1, data
+  Dim1Data <- strsplit(x=Dim1dat, split=",")
+  Dim1matrix <-  matrix(unlist(Dim1Data), nrow=168, byrow=T)
+  Dim1matrix <- Dim1matrix[, c(1,2,5,6,9,10,13,14,17,18,21,22)] #only x,y values
+  colnames(Dim1matrix) <- positionlabels
+
+  Dim2dat <- scan(netfile, skip=8730, nlines=168, what=" ", sep="\n") #Dimension 2 data
+  Dim2Data <- strsplit(x=Dim2dat, split=",")
+  Dim2matrix <-  matrix(unlist(Dim2Data), nrow=168, byrow=T)
+  Dim2matrix <- Dim2matrix[, c(1,2,5,6,9,10,13,14,17,18,21,22)] #only x,y values
+  colnames(Dim2matrix) <- positionlabels
+  
+  Dim3dat <- scan(netfile, skip=8914, nlines=168, what=" ", sep="\n") #Dimension 3 data
+  Dim3Data <- strsplit(x=Dim3dat, split=",")
+  Dim3matrix <-  matrix(unlist(Dim3Data), nrow=168, byrow=T)
+  Dim3matrix <- Dim3matrix[, c(1,2,5,6,9,10,13,14,17,18,21,22)] #only x,y values
+  colnames(Dim3matrix) <- positionlabels
+  
+  
+  #CSV files for each of the three dimensions
+  write.csv(x=Dim1matrix, file="PositionPlot/D1.csv")
+  write.csv(x=Dim2matrix, file="PositionPlot/D2.csv")
+  write.csv(x=Dim3matrix, file="PositionPlot/D3.csv")
+  
+  #Include a PDF file plotting (in some creative, meaningful, and labeled way) 
+  #how these quantities varied across the simulation.
+  
+  pdf("PositionPlot/Positions.pdf", width=7, height=7)
+  
+  #Commands to make the plot
+  plot(Dim1matrix)
+  plot(Dim2matrix)
+  plot(Dim3matrix)
+  
+  dev.off()
+  
+  ## 7 Winners Plot
+  dir.create("WinnersPlot")
+  
+  #information about what percentage of candidates from each party “Won” in each cycle. 
+  #The numbers may not add to 100. 
+  #The “y” column shows the percentage and the “x” column shows the time period.
+  
+  pdf("WinnersPlot/Winner.pdf", width=7, height=7)
+  
+  #Commands to make the plot
+  plot(Dim1matrix)
+  plot(Dim2matrix)
+  plot(Dim3matrix)
+  
+  dev.off()
+  
+  ## 8 Polariation Plot
+  dir.create("PolarizationPlot")
+  
+  #Euclidean distance between the mean position of the candidates (TOTAL), voters, 
+  #and activists associated with the two parties in each time period.
+  
+  pdf("PolarizationPlot/PolariationPlot.pdf", width=7, height=7)
+  
+  #Commands to make the plot
+  plot(Dim1matrix)
+  plot(Dim2matrix)
+  plot(Dim3matrix)
+  
+  dev.off()
+  
+  ## 9 Incumbent Percentage Plot
+  dir.create("IncumbentPercentagePlot")
+  
+  #the percentage of incumbent candidates in each party that are “winning” in each time period
+  
+  pdf("IncumbentPercentagePlot/IncumbentWins.pdf", width=7, height=7)
+  
+  #Commands to make the plot
+  plot(Dim1matrix)
+  plot(Dim2matrix)
+  plot(Dim3matrix)
+  
+  dev.off()
+  
+} # end function
+
 
 ## 2) The final directory should be structured as written in the assignment.
-# - Run the function and examine the output
-
-## 3) The final model output has three sections of interest
-
-# The first item are the “Globals”, which are either parameter settings used to initiate the model, 
-# or aggregate quantities of value as recorded in the final period of the simulation
-
-# Traits are associated with the various agents (Turtles) in the simulation as
-# they were in the final period of the simulation
-
-# various “plots” that recorded quantities of interest (e.g., the mean position 
-# of “Blue” candidates) periodically throughout the simulation.
-
-
-## 4) The Top level directory should be named such that it incorporates the name of the file used as well
-# as date and time of simulation
-
-
-## 5) Turtles directory should contain separate csv files containing the relevant information for
-# districts, voters, activists, candidates, and parties
-
-## 6) The first “Plot” records the average position of incumbent candidates (Red, Blue), activists, 
-# and voters along each of six dimensions. (D1, D2, D3, etc.) Only the first three are relevant here
-
-# This directory should contain CSV files for each of the separate dimensions
-
-# also include a PDF file plotting (in a meaningful and labeled way) how these quantities varied across the simulation
-
-
-## 7) The “Winners” Plot contains information about what percentage of candidates from each party
-# “Won” in each cycle. The numbers may not add to 100. The “y” column shows the percentage,
-# and the “x” column shows the time period. You should again make a CSV and PDF file for this information.
-
-
-## 8) The polarization plot shows the Euclidean distance between the mean position of the candidates
-#(TOTAL), voters, and activists associated with the two parties in each time period. The task is the same as before.
-
-
-## 9) The “Incumbent” output shows the percentage of incumbent candidates in each party that are
-# “winning” in each time period. The assignment is the same as above.
-
-
-## 10) Throughout the file there is extra information (mostly specifying how specific plots are to be dis-
-# played, the color they should be plotted etc. in the NetLogo interface).
+#  Run the function and examine the output
 
 
 
