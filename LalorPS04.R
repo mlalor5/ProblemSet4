@@ -408,17 +408,18 @@ sqrcube(7)
 # 4) Write an R program that prints out the standard multiplication table:
 # Hint: generate a matrix mtable that contains the table, then use show(mtable)
 
-multitable <- function(m,k) { #Takes inputs for table size m by k
+multitable <- function(m=9,k=9) { #Takes inputs for table size m by k, default "standard"
   mtable <- matrix(nrow=m, ncol=k)
   for (i in 1:m) {
     mtable[i,] <- i*(1:k)
   }
   show(mtable)
-  return(mtable)
 }
 #Prints out table, as well as returning matrix
-m <- k <- 9
-mtable <- multitable(m,k)
+#m <- k <- 9 #If a change to defaults
+#mtable <- multitable() #print table
+#Make into a program if desired
+# dump(list="multitable", file="multitable.R")
 
 
 ## 2) JMR Chapter 7, problems 3 and 4
@@ -460,7 +461,7 @@ data(treeg)
 #Each tree is a variable (tree.ID), each line a variable of tree's height (height.ft) over age (age)
 
 xyplot(height.ft ~ age, group= tree.ID, data=treeg, 
-       type="l", ylab="height (feet)", xlab="age (years)", col="black", tck=c(1,0)) #tck length 2 vector controls length of left/bottom and right/top
+       type="l", tck=c(1,0), ylab="height (feet)", xlab="age (years)", col="black") #tck length 2 vector controls length of left/bottom and right/top
 
 
 
